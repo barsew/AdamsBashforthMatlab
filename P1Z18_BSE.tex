@@ -1,0 +1,142 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % tu mo�e by� konieczne zast�pienie "cp1250" przez np. "utf8"
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{geometry}
+\geometry{hdivide={2cm,*,2cm}}
+\geometry{vdivide={2cm,*,2cm}}
+\usepackage{titlesec}
+\titlespacing{\section}{0ex}{1ex}{1ex} % zmniejszenie odst�p�w przed i po tytule rozdzia�u...
+\titleformat*{\section}{\sf\large\bfseries} % i zmiana kroju czcionki
+\titlespacing{\subsection}{0ex}{0.75ex}{0.75ex} % % j/w dla tytu��w podrozdzia��w
+\titleformat*{\subsection}{\sf\bfseries}
+
+% Zmniejszenie odst�p�w przed i za wzorami wystawionymi
+\AtBeginDocument{
+\addtolength{\abovedisplayskip}{-1ex}
+\addtolength{\abovedisplayshortskip}{-1ex}
+\addtolength{\belowdisplayskip}{-1ex}
+\addtolength{\belowdisplayshortskip}{-1ex}
+}
+% Kilka przydatnych definicji
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcommand{\razy}{\hspace{-0.5ex}\times\hspace{-0.5ex}} % mo�e si� przyda�
+
+
+\begin{document}
+
+\def\tablename{Tabela} % bez tej linii nazw� tabeli by�aby "Tablica"
+
+
+\noindent
+\textbf{Bartosz Seweryn, 320733, grupa 5, projekt 1, zadanie 18}
+
+
+\section*{Wstęp} % section* oznacza rozdzia� bez numeru (zasadne przy braku spisu tre�ci)
+Wyznaczanie przybliżonego rozwiązania liniowych równań różniczkowych 1-go i 2-go rzędu, metodą Adamsa-Bashfortha 4-go rzędu, wartości początkowe zostały obliczone metodą \\Rungego-Kutty 4-go rzędu (wzór Gilla). Z przeprowadzonych testów numerycznych wynika, że metoda Adamsa-Bashfortha 4-go rzędu zazwyczaj skutecznie przybliża wartości szukanej funkcji z błedem globalnym rzędu $h^4$, gdzie $h$ jest krokiem całkowania, czyli odległością między równoodległymi wezłami, w których przybliżamy funckję. Warto zauważyć, że krok całkowania należy dobierać dość ostrożnie, tzn. gdy będzie za duży, nasze rozwiązanie może okazać się bardzo niedokładne, z drugiej strony zbyt duże zmiejszanie kroku całkowania nie zawsze prowadzi do poprawy dokładności, a wręcz może ją pogorszyć. 
+\section*{Opis metody Adamsa-Bashfortha rzędu 4-go}
+Metoda Adamsa-Bashfortha rzędu 4-go jest metodą wielokrokową, wykorzystującą do obliczenia i-tego przybliżenia wartości wcześniejszych 4 przybliżeń. Z tego względu nie jest ona metodą samostartującą. Pierwsze, w tym wypadku 3 wartości (zerowa jest dana z warunku początkowego) muszą zostać obliczone inną metodą, np. metodą Rungego-Kutty rzędu 4 (wzór Gilla). Niech punkty $a = x_0 < x_1 < ... < x_n = b (n > 0)$ takie, że $x_k = a + kh$, gdzie $h = \frac{b-a}{n}$, dla przedziału $[a,b]$ będą punktami, w których chcemy przybliżyć szukaną funkcję.
+\\Liniowe równanie różniczkowe $a(x)y'(x) + b(x)y(x) = f(x)$, gdzie a, b i f są funkcjami zmiennej x, można prosto sprowadzić do postaci $y' = F(x,y)$. Wtedy, dla $i >= 4$
+\[ y_i = y_{i-1} + \frac{h}{24}(55y_{i-1}' - 59y_{i-2}' + 37y_{i-3}' - 9y_{i-4}' ), \]
+gdzie $y_i = y(x_i)$, $y_i' = F(x_i, y_i)$ oraz h to krok całkowania, natomiast dla $i = {1, 2, 3}$ wykorzystamy metodę Rungego-Kutty 4-go rzędu, a konkretnie wzór Gilla, który ma postać 
+\[y_i = y_{i-1} + \frac{1}{6}(k_1 + (2 - \sqrt{2})k_2 + (2 + \sqrt{2})k_3 + k_4),\]
+gdzie 
+\[k_1 = hF(x_i, y_i)\]
+\[k_2 = hF ( x_i + \frac{h}{2}, y_i + \frac{k_1}{2} ) \]
+\[k_3 = hF(x_i + \frac{h}{2}, y_i + \frac{1}{2}(-1 + \sqrt{2})k_1 + (1 - \frac{\sqrt{2}}{2})k_2)\]
+\[k_4 = hF(x_i + h, y_i - \frac{\sqrt{2}}{2}k_2 + (1 + \frac{\sqrt{2}}{2})k_3).\]
+Dla równań 2-go rzędu postaci $a(x)y''(x) + b(x)y'(x) + c(x)y(x) = f(x)$, gdzie a, b, c i f są funkcjami zmiennej x, postępujemy w sposób analogiczny, sprowadzamy je do postaci $y'' = g(x, y, y')$, jednak teraz musimy stworzyć układ dwóch równań pierwszego rzędu. W tym celu tworzymy wektor $Y$, taki że
+\[Y = \begin{pmatrix}
+           y \\
+           y' \\
+         \end{pmatrix}
+         = \begin{pmatrix}
+             y_1 \\
+             y_2 \\
+         \end{pmatrix}
+         ,
+         Y' = \begin{pmatrix}
+             y' \\
+             y'' \\
+         \end{pmatrix}
+         = \begin{pmatrix}
+             y_2 \\
+             \frac{f(x) - c(x)y_1 - b(x)y_2}{a(x)} \\
+         \end{pmatrix}
+         ,
+         Y' = F\begin{pmatrix}
+            x, Y
+         \end{pmatrix}
+         = \begin{pmatrix}
+             y_2 \\
+             g(x, y_1, y_2) \\
+         \end{pmatrix}
+         \]
+         i wykorzystujemy wcześniejsze wzory.
+\section*{Eksperymenty numeryczne}
+Błąd globalny metody Adamsa-Bashfortha rzędu 4-go wyraża się wzorem 
+\[ E = (b - a)\frac{251h^4}{720}y^{(5)}(\mu),\]
+dla pewnego $\mu \in (a,b)$. W tabeli 1 przedstaione są wyniki błędów globalnych dla dwóch wybranych równań w zależności od h. Jak widać błędy globalne są mniejsze, niż $h^4$ co jest bardzo dobrym przybliżeniem. Niestety dla równań, kórych rozwiązaniem jest na przykład funkcja $y(x) = e^x$, bład globalny na przedziale $[0, 20]$ jest już znacznie większy, dokładne wartości zostały podane w tabeli 2. Wynika to z faktu, iż piąta pochodna funkcji $e^x$ osiąga bardzo duże wartości, już dla $x = 10$, $y^{(5)}(10) \approx 22026$, aby zminimalizować bład musimy, więc mocno zmniejszyć krok całkowania.
+
+W tabeli 3 zostały podane wartości błedu globalnego dla równania $y'' + y = x^{2}$ i dla coraz mniejszego kroku całkowania. Jak widać zwiększanie liczby węzłów (czyli zmniejszanie h), poprawia dokładność tylko do pewngo poziomu, poźniej dokładność zamiast rosnąć - maleje. Musimy zatem odpowniedno dobierać ilość węzłów do długości przedziału, aby nasz program był jak najbardziej optymalny. 
+
+\begin{table}[!h]\vspace*{-2ex}
+\caption{\footnotesize Przybliżony błąd globlalny $E_k$ dla dwóch wybranych równań różniczkowych w zależności od $h$ - kroku całkowania, RA - rowiązanie analityczne, $[a,b]$ - przedział, na którym przybliżamy rozwiązanie, war. pocz. - warunki początkowe.
+}\vspace{-1.5ex}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+równanie            & RA                                                      & {[}a,b{]} & war. pocz.                                                & h                                                       & $E_{k}$                                                                          \\ \hline
+$y' + 2y = x$       & $\frac{2x + 3e^{(-2x - 2)} - 1}{4}$                     & $[-1,1]$  & $y(-1) = 0$                                                    & \begin{tabular}[c]{@{}l@{}}$0.02$\\ $0.01$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$2.33\razy10^{-7}$\\ $1.50\razy10^{-8}$\end{tabular}  \\ \hline
+$y'' + y = \sin{x}$ & $\frac{-xcos{x} + \cos{x} - \cos{(1)}\sin{(1 - x)}}{2}$ & $[1,2]$   & \begin{tabular}[c]{@{}l@{}}$y(1) = 0$,\\ $y'(1) = 0$\end{tabular} & \begin{tabular}[c]{@{}l@{}}0.01\\ 0.005\end{tabular}    & \begin{tabular}[c]{@{}l@{}}$5.40\razy10^{-9}$\\ $3.46\razy10^{-10}$\end{tabular} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[!h]\vspace*{-2ex}
+\caption{\footnotesize Przybliżony błąd globlalny $E_k$ dla równania różniczkowego $y'' - y' = 0$ w zależności od $h$ - kroku całkowania, RA - rowiązanie analityczne, $[a,b]$ - przedział, na którym przybliżamy rozwiązanie.
+}\vspace{-1.5ex}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+równanie       & RA        & {[}a,b{]} & war. pocz.                                                  & h                                                                & $E_{k}$                                                                                            \\ \hline
+$y'' - y' = 0$ & $e^{x}$ & $[0,20]$  & \begin{tabular}[c]{@{}l@{}}$y(0) = 1$,\\ $y'(0) = 1$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$0.02$\\ $0.01$\\ $0.001$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$5.23\razy10^{2}$\\ $3.33\razy10^{1}$\\ $3.38\razy10^{-3}$\end{tabular} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[!h]\vspace*{-2ex}
+\caption{\footnotesize Przybliżony błąd globlalny $E_k$ dla wybranego równania różniczkowego dla bardzo małych kroków całkowania, RA - rowiązanie analityczne, $[a,b]$ - przedział, na którym przybliżamy rozwiązanie.
+}\vspace{-1.5ex}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+równanie          & RA                                           & {[}a,b{]}  & war. pocz.                                                   & h                                                                             & $E_{k}$                                                                                                 \\ \hline
+$y'' + y = x^{2}$ & $x^{2} + 2\sin{(1 - x)} + \cos{(1 - x)} - 2$ & $[1,1.01]$ & \begin{tabular}[c]{@{}l@{}}$y(1) = 0$,\\ $y'(1) = 0$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$10^{-4}$\\ $10^{-5}$\\ $10^{-6}$\end{tabular} & \begin{tabular}[c]{@{}l@{}}$4.43\razy10^{-16}$\\ $4.46\razy10^{-16}$\\ $4.82\razy10^{-16}$\end{tabular} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+W tabeli 4 zostało przedstawione porównanie błędów globalnych metody Rungego-Kutty 4-go rzędu (wzór gilla) i metody Adamsa-Bashfortha 4-go rzędu dla wybranego równania. Można zauważyć, że metoda Rungego-Kutty daje nam lepszą dokładność, niż metoda Adamsa-Bashfortha dodatkowo jest ona samostartująca.
+\begin{table}[!h]\vspace*{-2ex}
+\caption{\footnotesize Przybliżony błąd globlalny $E_k$ - RK w metodzie Rungego-Kutty 4-go rzędu (wzór Gilla), $E_k$ - AB - w metodzie Adamsa-Bashfortha rzedu 4-go, dla wybranego równania różniczkowego na przedziale $[1,2]$ dla warunków początkowych $y(1) = 0, y'(1) = 0$, AN - rozwiązanie analityczne.
+}\vspace{-1.5ex}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+równanie           & AN                                                & h                                                        & $E_{k}$ - AB                                                                      & $E_{k}$ - RK                                                                        \\ \hline
+$y'' + 2y = x^{3}$ & $\frac{x^{3} - 3x + 2\cos{(\sqrt{2}(x - 1))}}{2}$ & \begin{tabular}[c]{@{}c@{}}$0.01$\\ $0.005$\end{tabular} & \begin{tabular}[c]{@{}c@{}}$1.88\razy10^{-8}$\\ $1.20\razy10^{-9}$\end{tabular} & \begin{tabular}[c]{@{}c@{}}$1.82\razy10^{-10}$\\ $1.13\razy10^{-11}$\end{tabular} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{document}
